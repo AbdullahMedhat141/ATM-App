@@ -1,5 +1,5 @@
-function LoginPage() {
-  return <div>LoginPage</div>;
-}
+import LoginForm from "../components/auth/LoginForm";
 
-export default LoginPage;
+export default function LoginPage() {
+  return <LoginForm />;
+}
