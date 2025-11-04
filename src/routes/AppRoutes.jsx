@@ -9,12 +9,17 @@ import HistoryPage from "../pages/HistoryPage";
 import WatchlistPage from "../pages/WatchlistPage";
 import SettingsPage from "../pages/SettingsPage";
 import NotFoundPage from "../pages/NotFoundPage";
+import Protected from "../components/auth/ProtectedRoute";
 
 export const router = createBrowserRouter([
   { path: "/login", element: <LoginPage /> },
   {
     path: "/",
-    element: <App />,
+    element: (
+      <Protected>
+        <App />
+      </Protected>
+    ),
     children: [
       { index: true, element: <Navigate to="dashboard" replace /> },
 
