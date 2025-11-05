@@ -1,6 +1,6 @@
+import { useState } from "react";
 import { useAuth } from "../../hooks/useAuth";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useState } from "react";
 
 function LoginForm() {
   const [username, setUsername] = useState("");
@@ -8,15 +8,22 @@ function LoginForm() {
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const [error, setError] = useState("");
 
   async function handleSubmit(e) {
     e.preventDefault();
+    if (!username.trim() || !pin.trim()) {
+      setError("Please enter both username and PIN.");
+      return;
+    }
+
     try {
+      setError("");
       await login({ username, pin });
       const dest = location.state?.from?.pathname ?? "/dashboard";
       navigate(dest, { replace: true });
     } catch {
-      alert("Invalid login");
+      setError("Invalid username or PIN. Please try again.");
     }
   }
 
@@ -37,6 +44,7 @@ function LoginForm() {
         autoComplete="current-password"
       />
       <button type="submit">Login</button>
+      {error && <p>{error}</p>}
     </form>
   );
 }
