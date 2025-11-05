@@ -15,9 +15,7 @@ export default function AuthProvider({ children }) {
     if (!res.ok) throw new Error("API unreachable");
 
     const list = await res.json();
-    const record = Array.isArray(list)
-      ? list.find((x) => x.user_name === u && x.pin === p)
-      : null;
+    const record = list.find((x) => x.user_name === u && x.pin === p);
 
     if (!record) throw new Error("Invalid credentials");
 
