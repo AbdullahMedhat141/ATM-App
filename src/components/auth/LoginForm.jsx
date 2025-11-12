@@ -8,6 +8,7 @@ function LoginForm() {
   const { login } = useAuth();
   const navigate = useNavigate();
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -17,11 +18,14 @@ function LoginForm() {
     }
 
     try {
+      setLoading(true);
       setError("");
       await login({ username, pin });
       navigate("/dashboard", { replace: true });
     } catch {
       setError("Invalid username or PIN. Please try again.");
+    } finally {
+      setLoading(true);
     }
   }
 
@@ -41,7 +45,9 @@ function LoginForm() {
         placeholder="PIN"
         autoComplete="current-password"
       />
-      <button type="submit">Login</button>
+      <button type="submit" disabled={!username || !pin || loading}>
+        {loading ? "Logging in..." : "Login"}
+      </button>
       {error && <p>{error}</p>}
     </form>
   );
