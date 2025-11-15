@@ -60,7 +60,7 @@ export default function DashboardPage() {
           </div>
 
           <div className="dashboard-balance">
-            <BalanceCard balance={user.balance} />
+            <BalanceCard />
           </div>
 
           <div className="dashboard-summary">
