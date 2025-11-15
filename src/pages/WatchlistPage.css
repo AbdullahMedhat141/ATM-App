@@ -1,0 +1,54 @@
+.watchlist-page {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 1rem;
+}
+
+.watchlist-page h1 {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  color: var(--color-primary, #333);
+}
+
+.watchlist-page h2 {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  color: var(--color-primary, #333);
+}
+
+.watchlist-section {
+  margin-bottom: 2rem;
+}
+
+.currency-list ul,
+.watchlist-list ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.currency-list li,
+.watchlist-list li {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 1rem;
+  align-items: center;
+  padding: 0.75rem;
+  border-bottom: 1px solid var(--color-border, #e0e0e0);
+}
+
+.currency-list button,
+.watchlist-list button {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--color-border, #e0e0e0);
+  background: var(--color-background, #fff);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.currency-list button:hover,
+.watchlist-list button:hover {
+  background: var(--color-primary-light, #f0f0f0);
+}

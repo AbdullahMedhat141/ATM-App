@@ -1,0 +1,16 @@
+.deposit-page {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 1rem;
+}
+
+.deposit-page h1 {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  color: var(--color-primary, #333);
+  text-align: center;
+}
+
+.page-container {
+  padding: 1rem;
+}

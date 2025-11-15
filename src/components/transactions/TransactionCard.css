@@ -1,0 +1,54 @@
+.transaction-card {
+  border: 1px solid var(--color-border, #e0e0e0);
+  border-radius: 8px;
+  padding: 1rem;
+  background: var(--color-background, #fff);
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 1rem;
+  align-items: center;
+  transition: box-shadow 0.3s ease;
+}
+
+.transaction-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.transaction-icon {
+  font-size: 1.5rem;
+  min-width: 40px;
+  text-align: center;
+}
+
+.transaction-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.transaction-type {
+  font-weight: 600;
+  color: var(--color-primary, #333);
+}
+
+.transaction-date {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary, #666);
+}
+
+.transaction-amount {
+  font-weight: 600;
+  font-size: 1.125rem;
+}
+
+.transaction-amount.deposit {
+  color: #4caf50;
+}
+
+.transaction-amount.withdraw {
+  color: #f44336;
+}
+
+.transaction-amount.transfer {
+  color: #2196f3;
+}
