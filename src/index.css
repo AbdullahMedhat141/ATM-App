@@ -461,3 +461,117 @@ body {
   }
 }
 
+
+[data-theme="dark"] {
+  --bg: #0f1720;
+  --card-bg: #111827;
+  --muted: #9aa4b2;
+  --text: #e6eef6;
+  --primary: #4f46e5;
+  --primary-strong: #4338ca;
+  --border: #1f2937;
+  --surface: #0b1220;
+}
+
+[data-theme="dark"] body {
+  background-color: var(--bg);
+  color: var(--text);
+}
+
+[data-theme="dark"] .card,
+[data-theme="dark"] .card .card,
+[data-theme="dark"] .transaction-card,
+[data-theme="dark"] .currency-list,
+[data-theme="dark"] .my-watchlist,
+[data-theme="dark"] .deposit-form-card,
+[data-theme="dark"] .withdraw-form-card,
+[data-theme="dark"] .transaction-filter-card,
+[data-theme="dark"] .not-found-container {
+  background: var(--card-bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  box-shadow: none;
+}
+
+[data-theme="dark"] .navbar {
+  background: linear-gradient(135deg, #0b1220 0%, #111827 100%);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+  color: var(--text);
+}
+
+[data-theme="dark"] .balance-card {
+  background: linear-gradient(135deg, #0f1720 0%, #111827 100%);
+  color: var(--text);
+}
+
+[data-theme="dark"] .balance-card.balance-zero {
+  background: linear-gradient(135deg, #2b0f16 0%, #3b1220 100%);
+}
+
+[data-theme="dark"] .btn-primary {
+  background-color: var(--primary);
+  color: #fff;
+}
+
+[data-theme="dark"] .btn-secondary {
+  background-color: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+[data-theme="dark"] .input {
+  background: #0b1220;
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+[data-theme="dark"] .input:focus {
+  box-shadow: 0 0 0 4px rgba(79,70,229,0.12);
+  border-color: var(--primary-strong);
+}
+
+[data-theme="dark"] .transaction-list-loading,
+[data-theme="dark"] .transaction-list-empty,
+[data-theme="dark"] .transaction-list-error {
+  color: var(--muted);
+}
+
+[data-theme="dark"] .toast {
+  background: #0b1220;
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+[data-theme="dark"] .login-card {
+  background: linear-gradient(135deg, #0b1220 0%, #111827 100%);
+  color: var(--text);
+  box-shadow: 0 10px 30px rgba(2,6,23,0.6);
+}
+
+[data-theme="dark"] .not-found-button,
+[data-theme="dark"] .login-button {
+  box-shadow: none;
+}
+
+
+/* Light-mode overrides: ensure text visible on light backgrounds */
+:root[data-theme="light"] .navbar,
+:root[data-theme="light"] .not-found-container,
+:root[data-theme="light"] .birthday-popup,
+:root[data-theme="light"] .transaction-card,
+:root[data-theme="light"] .balance-card,
+:root[data-theme="light"] .login-card,
+:root[data-theme="light"] .toast,
+:root[data-theme="light"] .card,
+:root[data-theme="light"] .btn,
+:root[data-theme="light"] .btn-primary,
+:root[data-theme="light"] .btn-secondary {
+  color: #222 !important;
+}
+
+:root[data-theme="light"] .navbar a,
+:root[data-theme="light"] .navbar .logout-btn,
+:root[data-theme="light"] .navbar .theme-btn {
+  color: #fff; 
+}
+
