@@ -1,6 +1,6 @@
-/**
- * Input component
- */
+import React from "react";
+import "./Input.css";
+
 export default function Input({
   type = 'text',
   placeholder = '',
@@ -28,8 +28,5 @@ export default function Input({
     </div>
   );
 }
-
-import React from "react";
-import "./Input.css";
 
 

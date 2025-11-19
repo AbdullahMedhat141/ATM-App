@@ -47,7 +47,7 @@ export async function post(endpoint, data) {
 export async function put(endpoint, data) {
   try {
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-      method: 'PATCH',
+      method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },

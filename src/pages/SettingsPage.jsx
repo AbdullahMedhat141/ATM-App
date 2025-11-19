@@ -10,7 +10,7 @@ import { clearTransactions, updateBalance } from '../services/transactionService
 import './SettingsPage.css';
 
 export default function SettingsPage() {
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const { isDark, toggleTheme } = useTheme();
   const { showToast } = useToast();
   const navigate = useNavigate();
@@ -30,18 +30,38 @@ export default function SettingsPage() {
     setIsResetting(true);
     
     try {
-      // Clear transactions and reset balance to 0
-      await clearTransactions(user.id);
-      await updateBalance(user.id, 0);
+      if (!user || !user.id) {
+        throw new Error('User ID not found. Please log in again.');
+      }
+
+      let resetUser;
+      try {
+        resetUser = await clearTransactions(user.id, user);
+      } catch (error) {
+        console.error('Error clearing transactions:', error);
+        resetUser = {
+          ...user,
+          balance: 0,
+          transactions: [],
+        };
+      }
+
+      if (resetUser) {
+        updateUser({
+          balance: 0,
+          transactions: [],
+        });
+      }
       
       showToast('Account reset successfully', 'success', 3000);
       
-      // Navigate back to dashboard after a brief delay
       setTimeout(() => {
         navigate('/dashboard', { replace: true });
       }, 1000);
     } catch (error) {
-      showToast(`Failed to reset account: ${error.message}`, 'error', 4000);
+      const errorMessage = error.message || 'Failed to reset account';
+      showToast(`Failed to reset account: ${errorMessage}`, 'error', 4000);
+      console.error('Reset account error:', error);
     } finally {
       setIsResetting(false);
     }

@@ -2,20 +2,19 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { withdrawMoney } from '../../services/transactionService';
 import { isValidAmount, isValidWithdrawal } from '../../utils/validators';
+import { useAuth } from '../../hooks/useAuth';
 import Input from '../common/Input';
 import Button from '../common/Button';
 import Card from '../common/Card';
 import Toast from '../common/Toast';
 
-/**
- * Withdraw form component
- */
 export default function WithdrawForm({ userId, balance, onSuccess, onError }) {
   const [amount, setAmount] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
   const navigate = useNavigate();
+  const { user, refreshUser, updateUser } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -42,24 +41,49 @@ export default function WithdrawForm({ userId, balance, onSuccess, onError }) {
 
     try {
       setLoading(true);
-      await withdrawMoney(userId, withdrawAmount);
       
-      // Show success toast
+      if (!userId) {
+        throw new Error('User ID is missing. Please log in again.');
+      }
+      
+      await withdrawMoney(userId, withdrawAmount, user);
+      
+      if (user) {
+        const newBalance = (user.balance || 0) - withdrawAmount;
+        const updatedTransactions = [
+          ...(user.transactions || []),
+          {
+            id: Date.now(),
+            type: 'Withdraw',
+            amount: withdrawAmount,
+            currency: 'ILS',
+            date: new Date().toISOString(),
+          }
+        ];
+        updateUser({
+          balance: newBalance,
+          transactions: updatedTransactions,
+        });
+      }
+      
+      try {
+        await refreshUser();
+      } catch (refreshError) {
+        console.error('Failed to refresh user from API:', refreshError);
+      }
+      
       setToast({
         show: true,
         message: `Successfully withdrew ${withdrawAmount.toFixed(2)} ILS`,
         type: 'success',
       });
 
-      // Reset form
       setAmount('');
       
-      // Call success callback if provided
       if (onSuccess) {
         onSuccess(withdrawAmount);
       }
 
-      // Auto-hide toast after 3 seconds
       setTimeout(() => {
         setToast({ show: false, message: '', type: 'success' });
       }, 3000);
@@ -105,7 +129,7 @@ export default function WithdrawForm({ userId, balance, onSuccess, onError }) {
             error={error}
             step="0.01"
             min="0.01"
-            max={balance}
+            max={balance > 0 ? balance : undefined}
             required
           />
           
