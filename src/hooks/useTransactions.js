@@ -1,100 +1,76 @@
-import { useState, useEffect, useMemo } from 'react';
-import { getTransactions } from '../services/transactionService';
+import { useEffect, useState, useCallback } from "react";
 
-/**
- * Custom hook for managing transactions
- * @param {string} userId - User ID
- * @returns {object} Transactions state and utility functions
- */
+const API_BASE_URL = import.meta.env.VITE_API_URL;
+
 export function useTransactions(userId) {
   const [transactions, setTransactions] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [filteredTransactions, setFilteredTransactions] = useState([]);
   const [filter, setFilter] = useState({
-    type: 'all', // 'all', 'Deposit', 'Withdraw', 'Transfer'
+    type: "all",
     startDate: null,
     endDate: null,
   });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  useEffect(() => {
-    if (!userId) {
-      setLoading(false);
-      return;
+  const applyFilter = useCallback((list, filter) => {
+    let result = [...list];
+
+    if (filter.type !== "all") {
+      result = result.filter(
+        (t) => t.type.toLowerCase() === filter.type.toLowerCase()
+      );
     }
 
-    async function fetchTransactions() {
-      try {
-        setLoading(true);
-        setError(null);
-        const fetchedTransactions = await getTransactions(userId);
-        // Sort by date (newest first)
-        const sorted = fetchedTransactions.sort((a, b) => 
-          new Date(b.date) - new Date(a.date)
-        );
-        setTransactions(sorted);
-      } catch (err) {
-        // Only set error if it's a real error, not a fallback
-        if (err.message && !err.message.includes('Failed to fetch')) {
-          setError(err.message || 'Failed to fetch transactions');
-        }
-        console.error('Error fetching transactions:', err);
-        // Set empty array on error as fallback
-        setTransactions([]);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchTransactions();
-  }, [userId]);
-
-  // Filter transactions based on current filter
-  const filteredTransactions = useMemo(() => {
-    let filtered = [...transactions];
-
-    // Filter by type
-    if (filter.type !== 'all') {
-      filtered = filtered.filter(t => t.type === filter.type);
-    }
-
-    // Filter by date range
     if (filter.startDate) {
-      filtered = filtered.filter(t => new Date(t.date) >= new Date(filter.startDate));
+      const start = new Date(filter.startDate);
+      result = result.filter((t) => new Date(t.date) >= start);
     }
 
     if (filter.endDate) {
-      filtered = filtered.filter(t => new Date(t.date) <= new Date(filter.endDate));
+      const end = new Date(filter.endDate);
+      result = result.filter((t) => new Date(t.date) <= end);
     }
 
-    return filtered;
-  }, [transactions, filter]);
+    setFilteredTransactions(result);
+  }, []);
 
-  const refreshTransactions = async () => {
-    if (!userId) return;
-    
+  const fetchTransactions = useCallback(async () => {
     try {
-      setError(null);
-      const fetchedTransactions = await getTransactions(userId);
-      const sorted = fetchedTransactions.sort((a, b) => 
-        new Date(b.date) - new Date(a.date)
-      );
-      setTransactions(sorted);
-      return sorted;
-    } catch (err) {
-      setError(err.message || 'Failed to refresh transactions');
-      throw err;
-    }
-  };
+      setLoading(true);
+      setError("");
 
+      const res = await fetch(`${API_BASE_URL}/users?id=${userId}`);
+      if (!res.ok) throw new Error("Failed to load user data");
+
+      const user = await res.json();
+      const list = user[0].transactions;
+
+      const sorted = list.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+      setTransactions(sorted);
+      applyFilter(sorted, filter);
+    } catch (err) {
+      setError(err.message || "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  }, [userId, filter, applyFilter]);
+
+  useEffect(() => {
+    applyFilter(transactions, filter);
+  }, [filter, transactions, applyFilter]);
+
+  useEffect(() => {
+    if (userId) fetchTransactions();
+  }, [userId, fetchTransactions]);
   return {
     transactions,
     filteredTransactions,
-    loading,
-    error,
     filter,
     setFilter,
-    refreshTransactions,
-    setTransactions, // For optimistic updates
+    loading,
+    error,
+    refreshTransactions: fetchTransactions,
   };
 }
-

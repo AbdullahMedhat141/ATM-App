@@ -33,6 +33,8 @@ export default function AuthProvider({ children }) {
     if (!record) throw new Error("Invalid credentials");
 
     setUser(record);
+    localStorage.setItem("userId", record.id);
+    localStorage.setItem("user", JSON.stringify(record));
     return record;
   }
 
