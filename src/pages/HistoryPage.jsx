@@ -1,32 +1,39 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
 import { useTransactions } from '../hooks/useTransactions';
 import TransactionList from '../components/history/TransactionList';
 import TransactionFilter from '../components/transactions/TransactionFilter';
 import Pagination from '../components/history/Pagination';
 import { ITEMS_PER_PAGE } from '../utils/constants';
 
-/**
- * History Page with pagination and filtering
- */
 export default function HistoryPage() {
-  // Get userId from localStorage (set by login)
-  const [userId, setUserId] = useState(() => {
-    const stored = localStorage.getItem('userId');
-    return stored || null;
-  });
-
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
-  
-  // For testing: If no userId, use a test ID (remove this when login is ready)
-  const testUserId = userId || '2'; // Using user ID 2 from mock data as example
-  
-  if (!userId) {
-    console.warn('No userId found. Using test userId:', testUserId);
-    localStorage.setItem('userId', testUserId);
+
+  useEffect(() => {
+    if (!user) {
+      navigate('/', { replace: true });
+    }
+  }, [user, navigate]);
+
+  if (!user) {
+    return (
+      <div className="page-container history-page">
+        <p>Loading...</p>
+      </div>
+    );
   }
-  
-  const actualUserId = userId || testUserId;
-  
+
+  if (!user.id) {
+    return (
+      <div className="page-container history-page">
+        <p>Error: User ID not found. Please log in again.</p>
+      </div>
+    );
+  }
+
   const { 
     filteredTransactions, 
     loading, 
@@ -34,7 +41,7 @@ export default function HistoryPage() {
     filter, 
     setFilter,
     refreshTransactions 
-  } = useTransactions(actualUserId);
+  } = useTransactions(user.id, user.transactions);
 
   // Paginate filtered transactions
   const paginatedTransactions = useMemo(() => {
@@ -54,19 +61,6 @@ export default function HistoryPage() {
   return (
     <div className="page-container history-page">
       <h1>Transaction History</h1>
-      {!userId && (
-        <div style={{ 
-          background: '#fff3cd', 
-          padding: '1rem', 
-          borderRadius: '6px', 
-          marginBottom: '1rem',
-          border: '1px solid #ffc107'
-        }}>
-          <p style={{ margin: 0, color: '#856404' }}>
-            ⚠️ Testing mode: Using test userId ({testUserId}). Login system not yet implemented.
-          </p>
-        </div>
-      )}
       
       <TransactionFilter 
         filter={filter} 

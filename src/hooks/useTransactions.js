@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
-export function useTransactions(userId) {
+export function useTransactions(userId, userTransactions = null) {
   const [transactions, setTransactions] = useState([]);
   const [filteredTransactions, setFilteredTransactions] = useState([]);
   const [filter, setFilter] = useState({
@@ -40,11 +40,19 @@ export function useTransactions(userId) {
       setLoading(true);
       setError("");
 
+      if (userTransactions && Array.isArray(userTransactions)) {
+        const sorted = [...userTransactions].sort((a, b) => new Date(b.date) - new Date(a.date));
+        setTransactions(sorted);
+        applyFilter(sorted, filter);
+        setLoading(false);
+        return;
+      }
+
       const res = await fetch(`${API_BASE_URL}/users?id=${userId}`);
       if (!res.ok) throw new Error("Failed to load user data");
 
       const user = await res.json();
-      const list = user[0].transactions;
+      const list = user[0]?.transactions || [];
 
       const sorted = list.sort((a, b) => new Date(b.date) - new Date(a.date));
 
@@ -55,15 +63,23 @@ export function useTransactions(userId) {
     } finally {
       setLoading(false);
     }
-  }, [userId, filter, applyFilter]);
+  }, [userId, filter, applyFilter, userTransactions]);
 
   useEffect(() => {
     applyFilter(transactions, filter);
   }, [filter, transactions, applyFilter]);
 
   useEffect(() => {
-    if (userId) fetchTransactions();
-  }, [userId, fetchTransactions]);
+    if (userTransactions && Array.isArray(userTransactions)) {
+      const sorted = [...userTransactions].sort((a, b) => new Date(b.date) - new Date(a.date));
+      setTransactions(sorted);
+      applyFilter(sorted, filter);
+      setLoading(false);
+    } else if (userId) {
+      fetchTransactions();
+    }
+  }, [userId, userTransactions, filter, applyFilter, fetchTransactions]);
+
   return {
     transactions,
     filteredTransactions,
